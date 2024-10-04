@@ -1,0 +1,53 @@
+html {
+    height: 100%; /* Ensure html takes full height */
+}
+
+body {
+    background-color: #212121;
+    color: white; /* Sets text color to white for readability */
+    font-family: Arial, sans-serif; /* Sets a default font */
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Full height */
+    display: grid; /* Enable CSS grid on the body */
+    justify-content: center; /* Center horizontally */
+    align-items: start; /* Align items at the start (top) */
+}
+
+.button-container {
+    display: flex; /* Enable flexbox for the button container */
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center buttons horizontally */
+    margin-top: 50px; /* Add some space from the top */
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    width: 300px; /* Set width of button */
+    height: 60px; /* Set height of button */
+    border-radius: 15px; /* Round corners */
+    font-size: 16px; /* Font size */
+    background-color: #4CAF50; /* Background color for the button */
+    color: white; /* Text color for the button */
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    margin-bottom: 15px; /* Space between buttons */
+    box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.6);
+
+}
+
+.btn:hover {
+    background-color: #45a049; /* Darker shade on hover */
+    
+}
+
+#add_button{
+    
+    background-color: #615e5e;
+}
+
+#add_button:hover{
+    background-color: #3e3d3d;
+    
+}

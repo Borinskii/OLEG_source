@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
+    <title>O.L.E.G.</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <!-- Messages will be displayed here -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#sendButton').click(sendMessage);
+            $('#userInput').keypress(function (event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            function sendMessage() {
+                const messageText = $('#userInput').val().trim(); // Get input value
+
+                if (messageText === '') return; // Do nothing if input is empty
+
+                // Create user message element
+                const userMessage = $('<div class="message user-message"></div>').text(messageText);
+                $('#messages').append(userMessage);
+                $('#userInput').val(''); // Clear input
+                scrollToBottom();
+
+                // Send message to the Flask server
+                $.ajax({
+                    url: '/send',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ message: messageText }),
+                    success: function (data) {
+                        // Create bot message element
+                        const botMessage = $(`
+                            <div class="message bot-message">
+                                <img src="{{ url_for('static', filename='icon.png') }}" alt="Bot Avatar" class="bot-avatar">
+                                ${data.response}
+                            </div>
+                        `);
+                        $('#messages').append(botMessage);
+                        scrollToBottom();
+                    }
+                });
+            }
+
+            function scrollToBottom() {
+                const messages = $('#messages');
+                messages.scrollTop(messages[0].scrollHeight); // Scroll to the bottom
+            }
+        });
+    </script>
+</body>
+</html>
