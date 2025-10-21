@@ -47,7 +47,7 @@ An AI-powered educational assistant that generates personalized study courses wi
 ## 📋 Prerequisites
 
 - Python 3.8 or higher
-- Fireworks AI API key ([Get one free here](https://fireworks.ai))
+- Fireworks AI API key ([Get one here](https://fireworks.ai))
 - Modern web browser
 
 ## 🔧 Installation
