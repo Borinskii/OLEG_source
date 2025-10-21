@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_course.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>{{ course_name }} - O.L.E.G.</title>
+</head>
+<body>
+    <div class="course-header">
+        <button class="back-btn" onclick="window.location.href='/'">← Back to Home</button>
+        <h2 style="color: #66bb6a; flex: 1; text-align: center;">{{ course_name }}</h2>
+        <button class="chat-toggle-btn" id="toggleChat">🎓 Ask OLEG</button>
+    </div>
+
+    <div class="course-content">
+        <div class="course-title">
+            <h1>{{ course_name }}</h1>
+            <h3>Your Personalized Study Guide</h3>
+        </div>
+
+        <div class="study-guide-section">
+            <h2>📚 Study Guide</h2>
+
+            {% set current_topic = [] %}
+            {% set current_section = [] %}
+            {% for sentence in model_respond1 %}
+                {% if sentence.strip() %}
+                    {% if '**Topic' in sentence or 'Topic ' in sentence %}
+                        {% if current_topic %}
+                            </div>
+                        {% endif %}
+                        <div class="topic-section">
+                            <div class="topic-title">{{ sentence.replace('**', '').strip() }}</div>
+                        {% set _ = current_topic.append(1) %}
+                    {% elif '**Definition:**' in sentence or 'Definition:' in sentence %}
+                        <div class="topic-subsection">
+                            <div class="subsection-title">📖 Definition</div>
+                            <div class="subsection-content">{{ sentence.replace('**Definition:**', '').replace('Definition:', '').strip() }}</div>
+                        </div>
+                    {% elif '**Theoretical Foundations:**' in sentence or 'Theoretical Foundations:' in sentence %}
+                        <div class="topic-subsection">
+                            <div class="subsection-title">🔬 Theoretical Foundations</div>
+                            <div class="subsection-content">{{ sentence.replace('**Theoretical Foundations:**', '').replace('Theoretical Foundations:', '').strip() }}</div>
+                        </div>
+                    {% elif '**Practical Application:**' in sentence or 'Practical Application:' in sentence %}
+                        <div class="topic-subsection">
+                            <div class="subsection-title">💡 Practical Application</div>
+                            <div class="subsection-content">{{ sentence.replace('**Practical Application:**', '').replace('Practical Application:', '').strip() }}</div>
+                        </div>
+                    {% elif '**Key Terms:**' in sentence or 'Key Terms:' in sentence %}
+                        <div class="topic-subsection">
+                            <div class="subsection-title">🔑 Key Terms</div>
+                            <ul class="key-terms-list">
+                    {% elif '**Resources:**' in sentence or 'Resources:' in sentence %}
+                        {% if current_section %}
+                            </ul>
+                        {% endif %}
+                        <div class="topic-subsection">
+                            <div class="subsection-title">📚 Resources</div>
+                            <ul class="resources-list">
+                    {% elif sentence.strip().startswith('*') or sentence.strip().startswith('-') %}
+                        <li>{{ sentence.replace('*', '').replace('-', '').strip() }}</li>
+                    {% else %}
+                        <p>{{ sentence }}</p>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if current_topic %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="study-guide-section">
+            <h2>📅 20-Week Study Schedule</h2>
+            <p><em>Your personalized 20-week study schedule has been generated! Check the <strong>schedule.txt</strong> file in your project directory for the complete daily study plan with checkpoint tests and solutions.</em></p>
+        </div>
+    </div>
+
+    <!-- Chat Sidebar -->
+    <div class="chat-sidebar" id="chatSidebar">
+        <div class="chat-sidebar-header">
+            <h3>
+                <img src="{{ url_for('static', filename='icon.png') }}" width="24" height="24" alt="OLEG">
+                Chat with OLEG
+            </h3>
+            <button class="close-chat-btn" id="closeChat">×</button>
+        </div>
+        <div class="messages" id="messages">
+            <div class="bot-message">
+                <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                <div>Hi! I'm here to help with your {{ course_name }} course. What would you like to know?</div>
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Ask about the course..." />
+            <button id="sendButton" class="btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#toggleChat').click(function(){
+                $('#chatSidebar').addClass('active');
+            });
+
+            $('#closeChat').click(function(){
+                $('#chatSidebar').removeClass('active');
+            });
+
+            $('#sendButton').click(sendMessage);
+            $('#userInput').keypress(function (event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            function sendMessage() {
+                const messageText = $('#userInput').val().trim();
+                if (messageText === '') return;
+
+                const userMessage = $('<div class="message user-message"></div>').text(messageText);
+                $('#messages').append(userMessage);
+                $('#userInput').val('');
+                scrollToBottom();
+
+                const loadingMsg = $(`<div class="bot-message">
+                    <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                    <div class="loading">Thinking</div>
+                </div>`);
+                $('#messages').append(loadingMsg);
+                scrollToBottom();
+
+                $.ajax({
+                    url: '/send',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ formdata: messageText }),
+                    success: function (data) {
+                        loadingMsg.remove();
+                        const botMessage = $(`<div class="bot-message">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                            <div>${data.response}</div>
+                        </div>`);
+                        $('#messages').append(botMessage);
+                        scrollToBottom();
+                    },
+                    error: function () {
+                        loadingMsg.remove();
+                        alert('Error sending message');
+                    }
+                });
+            }
+
+            function scrollToBottom() {
+                const messages = $('#messages');
+                messages.scrollTop(messages[0].scrollHeight);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,53 +1,120 @@
-html {
-    height: 100%; /* Ensure html takes full height */
-}
-
-body {
-    background-color: #212121;
-    color: white; /* Sets text color to white for readability */
-    font-family: Arial, sans-serif; /* Sets a default font */
+/* mobile.css */
+* {
     margin: 0;
     padding: 0;
-    height: 100vh; /* Full height */
-    display: grid; /* Enable CSS grid on the body */
-    justify-content: center; /* Center horizontally */
-    align-items: start; /* Align items at the start (top) */
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0e0a;
+    color: #e8f5e9;
 }
 
 .button-container {
-    display: flex; /* Enable flexbox for the button container */
-    flex-direction: column; /* Stack buttons vertically */
-    align-items: center; /* Center buttons horizontally */
-    margin-top: 50px; /* Add some space from the top */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px 20px;
+    gap: 20px;
+}
+
+.header-home {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header-home h1 {
+    font-size: 48px;
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.header-home p {
+    font-size: 18px;
+    color: rgba(232, 245, 233, 0.7);
 }
 
 .btn {
-    padding: 10px 20px;
-    border: none;
-    width: 300px; /* Set width of button */
-    height: 60px; /* Set height of button */
-    border-radius: 15px; /* Round corners */
-    font-size: 16px; /* Font size */
-    background-color: #4CAF50; /* Background color for the button */
-    color: white; /* Text color for the button */
-    cursor: pointer; /* Changes cursor to pointer on hover */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-    margin-bottom: 15px; /* Space between buttons */
-    box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.6);
-
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    color: #e8f5e9;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 18px 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+    min-width: 300px;
+    text-align: center;
 }
 
 .btn:hover {
-    background-color: #45a049; /* Darker shade on hover */
-    
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
 }
 
-#add_button{
-    
-    background-color: #615e5e;
+#add_button {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 18px;
 }
 
-#add_button:hover{
-    background-color: #3e3d3d;
-    
+#add_button:hover {
+    box-shadow: 0 6px 25px rgba(102, 187, 106, 0.5);
+}
+
+.btn-icon {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+}
+
+.dynamic-btn {
+    background: rgba(20, 30, 20, 0.8);
+    border: 2px solid rgba(76, 175, 80, 0.4);
+}
+
+.dynamic-btn:hover {
+    background: rgba(30, 40, 30, 0.9);
+    border-color: rgba(76, 175, 80, 0.6);
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+    color: #e8f5e9;
+    border: 1px solid rgba(198, 40, 40, 0.3);
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(198, 40, 40, 0.2);
+}
+
+.clear-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(198, 40, 40, 0.4);
+}
+
+@media (max-width: 600px) {
+    .btn {
+        min-width: 250px;
+        padding: 16px 32px;
+    }
+
+    .header-home h1 {
+        font-size: 36px;
+    }
 }

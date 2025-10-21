@@ -2,22 +2,51 @@
 <html lang="en">
 <head>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
-    <title>O.L.E.G</title>
+    <title>O.L.E.G. - Home</title>
     <meta charset="UTF-8" />
-
-    <!-- Load mobile.css for mobile devices -->
-    <link rel="stylesheet" media="only screen and (max-width: 600px)" href="{{ url_for('static', filename='mobile.css') }}">
-    <!-- Load desktop.css for larger screens -->
-    <link rel="stylesheet" media="only screen and (min-width: 601px)" href="{{ url_for('static', filename='desktop.css') }}">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='mobile.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
-
 <body>
-    <div class="button-container"> <!-- Wrapper for buttons -->
+    <div class="button-container">
+        <div class="header-home">
+            <h1>O.L.E.G.</h1>
+            <p>Organizational Learning & Educational Guide</p>
+        </div>
+
         <button class="btn" id="add_button" type="button" onclick="window.location.href='/new_course'">
-          <img src="{{ url_for('static', filename='add_image.png') }}" alt="Add Course" class="btn-icon">
+            <img src="{{ url_for('static', filename='add_image.png') }}" alt="Add" class="btn-icon">
+            Create New Course
         </button>
+
+        {% if buttons %}
+            {% for button in buttons %}
+            <button class="btn dynamic-btn" type="button" onclick="window.location.href='/course/{{ button }}'">
+                🎓 {{ button }}
+            </button>
+            {% endfor %}
+
+            <button class="clear-btn" id="clearAll">🗑️ Clear All Courses</button>
+        {% else %}
+            <p style="color: rgba(232, 245, 233, 0.5); margin-top: 20px;">No courses yet. Create your first one!</p>
+        {% endif %}
     </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#clearAll').click(function(){
+                if(confirm('⚠️ Are you sure you want to delete all courses? This cannot be undone!')) {
+                    $.post('/clear_courses', function(response) {
+                        if(response.status === 'success') {
+                            location.reload();
+                        }
+                    }).fail(function() {
+                        alert('Error clearing courses. Please try again.');
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

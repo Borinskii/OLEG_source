@@ -2,26 +2,98 @@
 <html lang="en">
 <head>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
-    <title>O.L.E.G.</title>
+    <title>O.L.E.G. - New Course</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #fileUpload {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="header">
+        <h1>
+            <img src="{{ url_for('static', filename='icon.png') }}" class="logo-icon" alt="OLEG">
+            O.L.E.G.
+        </h1>
+        <button class="btn btn-finish" id="new_created_course">✓ FINISH COURSE</button>
+    </div>
+
     <div class="chat-container">
         <div class="messages" id="messages">
-            <!-- Messages will be displayed here -->
+            <div class="bot-message">
+                <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                <div>Hello! I'm OLEG, your educational assistant. Tell me about the course you want to create, or upload your course materials!</div>
+            </div>
         </div>
         <div class="input-container">
+            <input type="file" id="fileUpload" accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.xlsx,.docx">
+            <img src="{{ url_for('static', filename='load_file.png') }}" alt="Upload" class="btn-icon" id="uploadTrigger" title="Upload file">
             <input type="text" id="userInput" placeholder="Type your message..." />
-            <button id="sendButton">Send</button>
+            <button id="sendButton" class="btn">Send</button>
         </div>
     </div>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function(){
+            $('#new_created_course').click(function(){
+                $(this).text('⏳ Creating course...').prop('disabled', true);
+                $.post('/finish', function(response) {
+                    window.location.href = '/';
+                }).fail(function() {
+                    alert('Error creating course. Please try again.');
+                    $('#new_created_course').text('✓ FINISH COURSE').prop('disabled', false);
+                });
+            });
+
+            $('#uploadTrigger').click(function () {
+                $('#fileUpload').click();
+            });
+
+            $('#fileUpload').change(function () {
+                loadFile();
+            });
+
+            function loadFile() {
+                const file = $('#fileUpload')[0].files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('pdf_file', file);
+
+                const loadingMsg = $(`<div class="bot-message">
+                    <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                    <div class="loading">Processing file</div>
+                </div>`);
+                $('#messages').append(loadingMsg);
+                scrollToBottom();
+
+                $.ajax({
+                    url: '/load_file',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        loadingMsg.remove();
+                        const botMessage = $(`<div class="bot-message">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                            <div>${data.response}</div>
+                        </div>`);
+                        $('#messages').append(botMessage);
+                        scrollToBottom();
+                    },
+                    error: function () {
+                        loadingMsg.remove();
+                        alert('Error uploading file');
+                    }
+                });
+            }
+
             $('#sendButton').click(sendMessage);
             $('#userInput').keypress(function (event) {
                 if (event.key === 'Enter') {
@@ -30,39 +102,45 @@
             });
 
             function sendMessage() {
-                const messageText = $('#userInput').val().trim(); // Get input value
+                const messageText = $('#userInput').val().trim();
+                if (messageText === '') return;
 
-                if (messageText === '') return; // Do nothing if input is empty
-
-                // Create user message element
                 const userMessage = $('<div class="message user-message"></div>').text(messageText);
                 $('#messages').append(userMessage);
-                $('#userInput').val(''); // Clear input
+                $('#userInput').val('');
                 scrollToBottom();
 
-                // Send message to the Flask server
+                const loadingMsg = $(`<div class="bot-message">
+                    <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                    <div class="loading">Thinking</div>
+                </div>`);
+                $('#messages').append(loadingMsg);
+                scrollToBottom();
+
                 $.ajax({
                     url: '/send',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ message: messageText }),
+                    data: JSON.stringify({ formdata: messageText }),
                     success: function (data) {
-                        // Create bot message element
-                        const botMessage = $(`
-                            <div class="message bot-message">
-                                <img src="{{ url_for('static', filename='icon.png') }}" alt="Bot Avatar" class="bot-avatar">
-                                ${data.response}
-                            </div>
-                        `);
+                        loadingMsg.remove();
+                        const botMessage = $(`<div class="bot-message">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
+                            <div>${data.response}</div>
+                        </div>`);
                         $('#messages').append(botMessage);
                         scrollToBottom();
+                    },
+                    error: function () {
+                        loadingMsg.remove();
+                        alert('Error sending message');
                     }
                 });
             }
 
             function scrollToBottom() {
                 const messages = $('#messages');
-                messages.scrollTop(messages[0].scrollHeight); // Scroll to the bottom
+                messages.scrollTop(messages[0].scrollHeight);
             }
         });
     </script>

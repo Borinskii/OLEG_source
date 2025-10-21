@@ -1,0 +1,48 @@
+# .gitignore
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Flask
+instance/
+flask_session/
+flask_session1/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+uploads/
+*.txt
+!requirements.txt
+preschedule.txt
+saved_course.txt
+schedule.txt
+step3.txt
+
+# Logs
+*.log

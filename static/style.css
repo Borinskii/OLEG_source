@@ -1,101 +1,237 @@
 /* style.css */
-
-html, body {
-    height: 100%; /* Ensure the page takes full height */
+* {
     margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #212121; /* Dark background */
-    color: white; /* White text */
-    font-family: Arial, sans-serif; /* Default font */
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.chat-container {
-    width: 400px; /* Width of chat container */
-    max-height: 100%; /* Max height of chat container */
-  /*  border: 1px solid #444; /* Border color */
-    border-radius: 10px; /* Rounded corners */
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0e0a;
+    color: #e8f5e9;
+}
 
-    position: absolute; /* Position it absolutely */
-    bottom: 20px; /
-   /* background-color: #333; /* Background color for chat container */
+/* Header/Navigation */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 20, 10, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.header h1 {
+    font-size: 24px;
+    color: #4caf50;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.btn {
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    color: #e8f5e9;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+}
+
+.btn-finish {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    position: fixed;
+    top: 15px;
+    right: 30px;
+    z-index: 1001;
+}
+
+.btn-finish:hover {
+    box-shadow: 0 6px 20px rgba(102, 187, 106, 0.5);
+}
+
+/* Chat Container */
+.chat-container {
+    max-width: 900px;
+    margin: 80px auto 20px;
+    height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    background: rgba(15, 25, 15, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    overflow: hidden;
 }
 
 .messages {
-    flex: 1; /* Take remaining space */
-    padding: 10px; /* Padding for messages area */
-    overflow-y: auto; /* Scroll if overflow */
-    display: flex; /* Enable flexbox for messages area */
-    flex-direction: column; /* Stack messages vertically */
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.input-container {
-    display: flex; /* Flexbox for input and button */
-    padding: 10px; /* Padding for input area */
-    border: none; /* No border */
-    border-radius: 15px; /* Rounded corners */
-    background-color: #2f2f2f; /* Background color for input area */
+.messages::-webkit-scrollbar {
+    width: 8px;
 }
 
-input[type="text"] {
-    flex: 1; /* Input takes available space */
-    padding: 10px; /* Padding inside input */
-    border: none; /* No border */
-    border-radius: 15px; /* Rounded corners */
-    margin-right: 10px; /* Space between input and button */
-    background-color: #5b5b5b;
-    color: white;
-
+.messages::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
 }
 
-button {
-    padding: 10px; /* Padding inside button */
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #191919; /* Green background */
-    color: white; /* White text */
-    cursor: pointer; /* Pointer cursor on hover */
+.messages::-webkit-scrollbar-thumb {
+    background: rgba(76, 175, 80, 0.4);
+    border-radius: 10px;
 }
 
-button:hover {
-    background-color: #171717; /* Darker green on hover */
+.messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(76, 175, 80, 0.6);
 }
 
+/* Message Bubbles */
 .message {
-    margin: 5px 0; /* Space between messages */
-    padding: 10px; /* Padding for message */
-    border-radius: 15px; /* Rounded corners for messages */
-    max-width: 70%; /* Max width of the message bubble */
-    word-wrap: break-word; /* Wrap long words */
+    max-width: 70%;
+    padding: 14px 18px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    animation: slideIn 0.3s ease;
+    line-height: 1.6;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .user-message {
-    background-color: #2f2f2f; /* Dark gray for user messages */
-    color: white; /* White text */
-    align-self: flex-end; /* Align user messages to the right */
-    margin-left: auto; /* Push user messages to the right */
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    color: #e8f5e9;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .bot-message {
-    background-color: #191919; /* Green for bot messages */
-    color: white; /* White text */
-    align-self: flex-start; /* Align bot messages to the left */
-    margin-right: auto; /* Push bot messages to the left */
-}
-
-/* Additional styles for the bot avatar */
-.bot-message {
-    display: flex; /* Use flexbox for alignment */
-    align-items: center; /* Center items vertically */
-    margin-bottom: 10px; /* Space between messages */
+    background: rgba(30, 40, 30, 0.9);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #e8f5e9;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .bot-avatar {
-    width: 30px; /* Width of the avatar */
-    height: 30px; /* Height of the avatar */
-    border-radius: 50%; /* Make it circular */
-    margin-right: 10px; /* Space between avatar and message */
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.3));
+}
+
+/* Input Container */
+.input-container {
+    padding: 20px;
+    background: rgba(10, 20, 10, 0.95);
+    border-top: 1px solid rgba(76, 175, 80, 0.2);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+    filter: brightness(0) saturate(100%) invert(71%) sepia(11%) saturate(1706%) hue-rotate(73deg) brightness(95%) contrast(89%);
+}
+
+.btn-icon:hover {
+    transform: scale(1.1);
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(65%) sepia(52%) saturate(432%) hue-rotate(73deg) brightness(98%) contrast(91%);
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    border-radius: 12px;
+    background: rgba(20, 30, 20, 0.9);
+    color: #e8f5e9;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4caf50;
+    background: rgba(20, 30, 20, 1);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+}
+
+input[type="text"]::placeholder {
+    color: rgba(232, 245, 233, 0.4);
+}
+
+#sendButton {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    padding: 14px 28px;
+}
+
+#sendButton:hover {
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    color: #81c784;
+}
+
+.loading::after {
+    content: '...';
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
 }
