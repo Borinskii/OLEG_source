@@ -416,6 +416,58 @@ body {
     }
 }
 
+/* Duration Selector */
+.duration-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.duration-btn {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.duration-btn:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+
+.duration-btn.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.duration-btn svg {
+    color: var(--text-muted);
+}
+
+.duration-btn.active svg {
+    color: var(--primary);
+}
+
+.duration-label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.duration-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
 @media (max-width: 480px) {
     .top-nav {
         padding: 0.875rem 1rem;
@@ -432,5 +484,16 @@ body {
 
     .message-content {
         max-width: 85%;
+    }
+
+    .duration-selector {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .duration-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0.75rem;
     }
 }

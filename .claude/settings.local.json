@@ -3,7 +3,9 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(ls:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(timeout 5 python:*)"
     ]
   }
 }

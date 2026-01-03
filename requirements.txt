@@ -1,5 +1,9 @@
 flask
 flask-session
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+WTForms==3.1.2
+email-validator==2.1.0
 PyPDF2
 requests
 python-dotenv

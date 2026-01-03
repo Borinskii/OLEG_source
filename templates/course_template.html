@@ -37,74 +37,317 @@
             <h3>Your Personalized Study Guide</h3>
         </div>
 
-        <div class="study-guide-section">
-            <h2>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-                Study Guide
-            </h2>
+        <!-- Main Learning Interface -->
+        <div class="learning-interface">
+            <!-- Left Panel: Calendar & Stats -->
+            <div class="left-panel">
+                <!-- Streak and Statistics Cards -->
+                <div class="stats-grid-compact">
+                <div class="stat-card streak-card">
+                    <div class="stat-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Current Streak</div>
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-sublabel">days</div>
+                    </div>
+                </div>
 
-            {% set current_topic = [] %}
-            {% set current_section = [] %}
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Longest Streak</div>
+                        <div class="stat-value" id="longestStreak">0</div>
+                        <div class="stat-sublabel">days</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Days Studied</div>
+                        <div class="stat-value" id="daysStudied">0</div>
+                        <div class="stat-sublabel">total days</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Progress</div>
+                        <div class="stat-value" id="progressPercent">0</div>
+                        <div class="stat-sublabel">% complete</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <button class="calendar-nav-btn" id="prevMonth">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
+                        </svg>
+                    </button>
+                    <h3 id="calendarMonthYear">January 2026</h3>
+                    <button class="calendar-nav-btn" id="nextMonth">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                    <!-- Calendar days will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Daily Lesson Content -->
+        <div class="right-panel" id="lessonPanel">
+            <button class="btn-ask-oleg" id="askOlegBtn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <path d="M9 10h.01M15 10h.01M9.5 14.5s1 1 2.5 1 2.5-1 2.5-1"/>
+                </svg>
+                Ask OLEG
+            </button>
+            <div class="lesson-content">
+                <div class="empty-lesson">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                    <h3>Select a day to start learning</h3>
+                    <p>Choose a date from the calendar to view your daily lesson</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="study-guide-section">
+            <div class="section-header-collapsible" id="studyGuideHeader">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                    Reference Study Guide (Optional)
+                </h2>
+                <button class="toggle-section-btn" id="toggleStudyGuide">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="collapsible-content" id="studyGuideContent" style="display: none;">
+
+            <div class="study-guide-topics">
+            {% set topic_num = [0] %}
+            {% set current_topic_data = {'name': '', 'definition': [], 'theoretical': [], 'practical': [], 'key_terms': [], 'resources': []} %}
+            {% set current_section = [''] %}
+            {% set all_topics = [] %}
+
+            {# First pass: collect all topics and their content #}
             {% for sentence in model_respond1 %}
                 {% if sentence.strip() %}
                     {% if '**Topic' in sentence or 'Topic ' in sentence %}
-                        {% if current_topic %}
-                            </div>
+                        {# Save previous topic if exists #}
+                        {% if current_topic_data.name %}
+                            {% set _ = all_topics.append(current_topic_data.copy()) %}
                         {% endif %}
-                        <div class="topic-section">
-                            <div class="topic-title">{{ sentence.replace('**', '').strip() }}</div>
-                        {% set _ = current_topic.append(1) %}
+                        {# Start new topic #}
+                        {% set _ = topic_num.append(topic_num.pop() + 1) %}
+                        {% set _ = current_topic_data.update({'name': sentence.replace('**', '').strip(), 'definition': [], 'theoretical': [], 'practical': [], 'key_terms': [], 'resources': []}) %}
                     {% elif '**Definition:**' in sentence or 'Definition:' in sentence %}
-                        <div class="topic-subsection">
-                            <div class="subsection-title">Definition</div>
-                            <div class="subsection-content">{{ sentence.replace('**Definition:**', '').replace('Definition:', '').strip() }}</div>
-                        </div>
-                    {% elif '**Theoretical Foundations:**' in sentence or 'Theoretical Foundations:' in sentence %}
-                        <div class="topic-subsection">
-                            <div class="subsection-title">Theoretical Foundations</div>
-                            <div class="subsection-content">{{ sentence.replace('**Theoretical Foundations:**', '').replace('Theoretical Foundations:', '').strip() }}</div>
-                        </div>
-                    {% elif '**Practical Application:**' in sentence or 'Practical Application:' in sentence %}
-                        <div class="topic-subsection">
-                            <div class="subsection-title">Practical Application</div>
-                            <div class="subsection-content">{{ sentence.replace('**Practical Application:**', '').replace('Practical Application:', '').strip() }}</div>
-                        </div>
-                    {% elif '**Key Terms:**' in sentence or 'Key Terms:' in sentence %}
-                        <div class="topic-subsection">
-                            <div class="subsection-title">Key Terms</div>
-                            <ul class="key-terms-list">
-                    {% elif '**Resources:**' in sentence or 'Resources:' in sentence %}
-                        {% if current_section %}
-                            </ul>
+                        {% set _ = current_section.append('definition') %}
+                        {% set content = sentence.replace('**Definition:**', '').replace('Definition:', '').strip() %}
+                        {% if content %}
+                            {% set _ = current_topic_data.definition.append(content) %}
                         {% endif %}
-                        <div class="topic-subsection">
-                            <div class="subsection-title">Resources</div>
-                            <ul class="resources-list">
+                    {% elif '**Theoretical Foundations:**' in sentence or 'Theoretical Foundations:' in sentence %}
+                        {% set _ = current_section.append('theoretical') %}
+                        {% set content = sentence.replace('**Theoretical Foundations:**', '').replace('Theoretical Foundations:', '').strip() %}
+                        {% if content %}
+                            {% set _ = current_topic_data.theoretical.append(content) %}
+                        {% endif %}
+                    {% elif '**Practical Application:**' in sentence or 'Practical Application:' in sentence %}
+                        {% set _ = current_section.append('practical') %}
+                        {% set content = sentence.replace('**Practical Application:**', '').replace('Practical Application:', '').strip() %}
+                        {% if content %}
+                            {% set _ = current_topic_data.practical.append(content) %}
+                        {% endif %}
+                    {% elif '**Key Terms:**' in sentence or 'Key Terms:' in sentence %}
+                        {% set _ = current_section.append('key_terms') %}
+                    {% elif '**Resources:**' in sentence or 'Resources:' in sentence %}
+                        {% set _ = current_section.append('resources') %}
                     {% elif sentence.strip().startswith('*') or sentence.strip().startswith('-') %}
-                        <li>{{ sentence.replace('*', '').replace('-', '').strip() }}</li>
-                    {% else %}
-                        <p>{{ sentence }}</p>
+                        {% set item = sentence.replace('*', '').replace('-', '').strip() %}
+                        {% if current_section[-1] == 'key_terms' %}
+                            {% set _ = current_topic_data.key_terms.append(item) %}
+                        {% elif current_section[-1] == 'resources' %}
+                            {% set _ = current_topic_data.resources.append(item) %}
+                        {% endif %}
+                    {% elif sentence.strip() and current_section %}
+                        {% if current_section[-1] == 'definition' %}
+                            {% set _ = current_topic_data.definition.append(sentence.strip()) %}
+                        {% elif current_section[-1] == 'theoretical' %}
+                            {% set _ = current_topic_data.theoretical.append(sentence.strip()) %}
+                        {% elif current_section[-1] == 'practical' %}
+                            {% set _ = current_topic_data.practical.append(sentence.strip()) %}
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endfor %}
-            {% if current_topic %}
-                </div>
+            {# Don't forget the last topic #}
+            {% if current_topic_data.name %}
+                {% set _ = all_topics.append(current_topic_data.copy()) %}
             {% endif %}
+
+            {# Second pass: render topics with nested dropdowns #}
+            {% for topic in all_topics %}
+                {% set topic_id = loop.index %}
+                <div class="topic-accordion">
+                    <div class="topic-header" onclick="toggleTopic({{ topic_id }})">
+                        <h3>{{ topic.name }}</h3>
+                        <svg class="topic-arrow" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                        </svg>
+                    </div>
+                    <div class="topic-content" id="topic-{{ topic_id }}" style="display: none;">
+
+                        {% if topic.definition %}
+                        <div class="subsection-accordion">
+                            <div class="subsection-header" onclick="toggleSubsection({{ topic_id }}, 'definition')">
+                                <h4>Definition</h4>
+                                <svg class="subsection-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="subsection-content" id="topic-{{ topic_id }}-definition" style="display: none;">
+                                {% for item in topic.definition %}
+                                    <p>{{ item }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if topic.theoretical %}
+                        <div class="subsection-accordion">
+                            <div class="subsection-header" onclick="toggleSubsection({{ topic_id }}, 'theoretical')">
+                                <h4>Theoretical Foundations</h4>
+                                <svg class="subsection-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="subsection-content" id="topic-{{ topic_id }}-theoretical" style="display: none;">
+                                {% for item in topic.theoretical %}
+                                    <p>{{ item }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if topic.practical %}
+                        <div class="subsection-accordion">
+                            <div class="subsection-header" onclick="toggleSubsection({{ topic_id }}, 'practical')">
+                                <h4>Practical Application</h4>
+                                <svg class="subsection-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="subsection-content" id="topic-{{ topic_id }}-practical" style="display: none;">
+                                {% for item in topic.practical %}
+                                    <p>{{ item }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if topic.key_terms %}
+                        <div class="subsection-accordion">
+                            <div class="subsection-header" onclick="toggleSubsection({{ topic_id }}, 'keyterms')">
+                                <h4>Key Terms</h4>
+                                <svg class="subsection-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="subsection-content" id="topic-{{ topic_id }}-keyterms" style="display: none;">
+                                <ul class="key-terms-list">
+                                {% for term in topic.key_terms %}
+                                    <li>{{ term }}</li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if topic.resources %}
+                        <div class="subsection-accordion">
+                            <div class="subsection-header" onclick="toggleSubsection({{ topic_id }}, 'resources')">
+                                <h4>Resources</h4>
+                                <svg class="subsection-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="subsection-content" id="topic-{{ topic_id }}-resources" style="display: none;">
+                                <ul class="resources-list">
+                                {% for resource in topic.resources %}
+                                    <li>{{ resource }}</li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            </div>
         </div>
 
         <div class="study-guide-section">
-            <h2>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                20-Week Study Schedule
-            </h2>
+            <div class="section-header-collapsible" id="scheduleHeader">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Full Study Schedule (Optional)
+                </h2>
+                <button class="toggle-section-btn" id="toggleSchedule">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="collapsible-content" id="scheduleContent" style="display: none;">
             {% if schedule_content %}
                 <div class="schedule-container">
                     {% set in_week = [] %}
@@ -159,8 +402,9 @@
                     {% endif %}
                 </div>
             {% else %}
-                <p><em>Your personalized 20-week study schedule has been generated! Check the <strong>schedule.txt</strong> file in your project directory for the complete daily study plan with checkpoint tests and solutions.</em></p>
+                <p><em>Your personalized study schedule has been generated and stored in the database.</em></p>
             {% endif %}
+            </div>
         </div>
     </div>
 
@@ -186,8 +430,58 @@
     </div>
 
     <script>
+        const courseId = {{ course_id }};
+        let currentDate = new Date();
+        let selectedDate = null;
+        let courseStartDate = null;
+
         $(document).ready(function(){
-            $('#toggleChat').click(function(){
+            // Toggle study guide section
+            $('#toggleStudyGuide').click(function() {
+                $('#studyGuideContent').slideToggle();
+                $(this).toggleClass('open');
+            });
+
+            // Toggle schedule section
+            $('#toggleSchedule').click(function() {
+                $('#scheduleContent').slideToggle();
+                $(this).toggleClass('open');
+            });
+
+            // Get course info to find start date
+            $.ajax({
+                url: `/api/course/${courseId}/info`,
+                type: 'GET',
+                success: function(data) {
+                    if (data.start_date) {
+                        const startDate = new Date(data.start_date);
+                        currentDate = startDate;
+                    }
+                    // Initialize calendar with start date
+                    renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+                },
+                error: function() {
+                    console.log('Could not fetch course info, using current date');
+                    renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+                }
+            });
+
+            // Initialize dashboard
+            loadStatistics();
+
+            // Calendar navigation
+            $('#prevMonth').click(function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+            });
+
+            $('#nextMonth').click(function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+            });
+
+            // Chat functionality
+            $('#toggleChat, #askOlegBtn').click(function(){
                 $('#chatSidebar').addClass('active');
             });
 
@@ -244,6 +538,580 @@
                 messages.scrollTop(messages[0].scrollHeight);
             }
         });
+
+        // Load statistics and streak info
+        function loadStatistics() {
+            $.ajax({
+                url: `/api/course/${courseId}/statistics`,
+                type: 'GET',
+                success: function(data) {
+                    $('#currentStreak').text(data.streak.current_streak || 0);
+                    $('#longestStreak').text(data.streak.longest_streak || 0);
+                    $('#daysStudied').text(data.streak.total_study_days || 0);
+                    $('#progressPercent').text(data.statistics.progress_percentage || 0);
+                },
+                error: function() {
+                    console.error('Error loading statistics');
+                }
+            });
+        }
+
+        // Render calendar for a given month
+        function renderCalendar(year, month) {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            $('#calendarMonthYear').text(`${monthNames[month - 1]} ${year}`);
+
+            $.ajax({
+                url: `/api/course/${courseId}/calendar/${year}/${month}`,
+                type: 'GET',
+                success: function(data) {
+                    const firstDay = new Date(year, month - 1, 1).getDay();
+                    const daysInMonth = new Date(year, month, 0).getDate();
+
+                    // Create a map of dates to their status
+                    const dateMap = {};
+                    data.days.forEach(day => {
+                        dateMap[day.date] = day;
+                    });
+
+                    // Clear existing calendar days
+                    $('.calendar-grid .calendar-day').remove();
+
+                    // Add empty cells for days before the first day
+                    for (let i = 0; i < firstDay; i++) {
+                        $('.calendar-grid').append('<div class="calendar-day empty"></div>');
+                    }
+
+                    // Add days of the month
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const dayData = dateMap[dateStr];
+
+                        let statusClass = 'inactive';
+                        let isTestDay = false;
+                        if (dayData) {
+                            statusClass = dayData.status;
+                            isTestDay = dayData.is_test_day || false;
+                        }
+
+                        const isToday = isSameDay(new Date(), new Date(year, month - 1, day));
+                        const todayClass = isToday ? 'today' : '';
+                        const testDayClass = isTestDay ? 'test-day' : '';
+
+                        const dayElement = $(`<div class="calendar-day ${statusClass} ${todayClass} ${testDayClass}" data-date="${dateStr}">
+                            <span class="day-number">${day}</span>
+                            ${isTestDay ? '<span class="test-marker">📝</span>' : ''}
+                            ${dayData && !isTestDay ? `<span class="day-indicator"></span>` : ''}
+                        </div>`);
+
+                        dayElement.click(function() {
+                            selectedDate = dateStr;
+                            $('.calendar-day').removeClass('selected');
+                            $(this).addClass('selected');
+                            loadDailyLesson(dateStr);
+                        });
+
+                        // Re-apply selected state if this is the currently selected date
+                        if (selectedDate === dateStr) {
+                            dayElement.addClass('selected');
+                        }
+
+                        $('.calendar-grid').append(dayElement);
+                    }
+                },
+                error: function() {
+                    console.error('Error loading calendar');
+                }
+            });
+        }
+
+        // Load daily lesson for a specific date
+        function loadDailyLesson(dateStr) {
+            selectedDate = dateStr;
+            const date = new Date(dateStr);
+            const dateFormatted = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Show loading state
+            $('#lessonPanel .lesson-content').html(`
+                <div class="lesson-loading">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <p>Loading lesson...</p>
+                </div>
+            `);
+
+            $.ajax({
+                url: `/api/course/${courseId}/daily-lesson/${dateStr}`,
+                type: 'GET',
+                success: function(data) {
+                    if (!data.has_content || data.activities.length === 0) {
+                        $('#lessonPanel .lesson-content').html(`
+                            <div class="empty-lesson">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                <h3>No lesson for this day</h3>
+                                <p>There are no activities scheduled for ${dateFormatted}</p>
+                            </div>
+                        `);
+                        $('#askOlegBtn').hide();
+                        return;
+                    }
+
+                    renderDailyLesson(data, dateFormatted);
+                },
+                error: function() {
+                    $('#lessonPanel .lesson-content').html(`
+                        <div class="empty-lesson">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h3>Error loading lesson</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    `);
+                    $('#askOlegBtn').hide();
+                    console.error('Error loading daily lesson');
+                }
+            });
+        }
+
+        // Render daily lesson with step-by-step content
+        function renderDailyLesson(lessonData, dateFormatted) {
+            const isTestDay = lessonData.is_test_day;
+            const activities = lessonData.activities;
+
+            // Collect all steps from all activities
+            let allSteps = [];
+            activities.forEach(activity => {
+                if (activity.theory_content) {
+                    try {
+                        const theoryData = JSON.parse(activity.theory_content);
+                        if (theoryData.steps && theoryData.steps.length > 0) {
+                            theoryData.steps.forEach(step => {
+                                allSteps.push({
+                                    ...step,
+                                    activityId: activity.id,
+                                    activityTitle: activity.title
+                                });
+                            });
+                        }
+                    } catch (e) {
+                        // If JSON parsing fails, create a single step
+                        allSteps.push({
+                            title: activity.title,
+                            content: activity.theory_content,
+                            type: 'theory',
+                            activityId: activity.id,
+                            activityTitle: activity.title
+                        });
+                    }
+                } else if (activity.test_questions) {
+                    // Add test content as a special step
+                    allSteps.push({
+                        title: activity.title,
+                        content: activity.test_questions,
+                        solutions: activity.test_solutions,
+                        type: 'test',
+                        activityId: activity.id,
+                        activityTitle: activity.title
+                    });
+                }
+            });
+
+            if (allSteps.length === 0) {
+                $('#lessonPanel .lesson-content').html(`
+                    <div class="empty-lesson">
+                        <div class="typing-indicator" style="margin-bottom: 1.5rem;">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <h3>Generating Your Lesson...</h3>
+                        <p>OLEG is creating personalized content for this day. This may take a few moments.</p>
+                        <button class="btn-primary" onclick="loadDailyLesson('${lessonData.date}')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 4v6h6M23 20v-6h-6"/>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+                `);
+                $('#askOlegBtn').hide();
+                return;
+            }
+
+            let lessonHtml = `
+                <div class="lesson-header">
+                    <div class="lesson-date">
+                        <h2>${dateFormatted}</h2>
+                        <div class="lesson-meta">
+                            ${isTestDay ? '<span class="test-badge">Test Day 📝</span>' : '<span class="lesson-badge">Lesson</span>'}
+                            <span class="day-number-badge">Day ${lessonData.day_number}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-body">
+                    <div class="step-progress">
+                        <div class="step-indicator">
+                            Step <span class="current-step-num">1</span> of <span class="total-steps-num">${allSteps.length}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${100 / allSteps.length}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="steps-container">
+            `;
+
+            allSteps.forEach((step, idx) => {
+                const stepType = step.type || 'theory';
+                const activeClass = idx === 0 ? 'active' : '';
+
+                if (stepType === 'test') {
+                    // Render test content
+                    lessonHtml += `
+                        <div class="lesson-step ${activeClass}" data-step="${idx + 1}">
+                            <h3 class="step-title">${step.title}</h3>
+                            <div class="step-content test-content">
+                                ${renderTestContent(step.content, step.solutions)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Render theory content with interactive input for practice questions
+                    const questionText = step.content.replace(/\n/g, ' ').substring(0, 500);
+                    let stepContentHtml = `<div class="question-text">${step.content.replace(/\n/g, '<br>')}</div>`;
+
+                    if (stepType === 'practice') {
+                        stepContentHtml += `
+                            <div class="practice-input-area" data-question="${questionText.replace(/"/g, '&quot;')}">
+                                <textarea
+                                    class="practice-answer-input"
+                                    placeholder="Type your answer here..."
+                                    rows="3"
+                                ></textarea>
+                                <button class="btn-check-answer" onclick="checkPracticeAnswer(${idx + 1})">
+                                    Check with OLEG
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 11l3 3L22 4"/>
+                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                    </svg>
+                                </button>
+                                <div class="answer-feedback" id="feedback-${idx + 1}" style="display: none;"></div>
+                            </div>
+                        `;
+                    }
+
+                    lessonHtml += `
+                        <div class="lesson-step ${activeClass}" data-step="${idx + 1}">
+                            <h3 class="step-title">${step.title}</h3>
+                            <div class="step-content ${stepType}">
+                                ${stepContentHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            lessonHtml += `
+                    </div>
+
+                    <div class="lesson-navigation">
+                        <button class="btn-nav" id="prevStepBtn" disabled>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
+                            </svg>
+                            Previous
+                        </button>
+                        <button class="btn-nav btn-nav-primary" id="nextStepBtn">
+                            Next
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            $('#lessonPanel .lesson-content').html(lessonHtml);
+
+            // Show Ask OLEG button
+            $('#askOlegBtn').show();
+
+            // Setup step navigation
+            let currentStep = 1;
+            const totalSteps = allSteps.length;
+
+            function updateStepDisplay() {
+                $('.lesson-step').removeClass('active');
+                $(`.lesson-step[data-step="${currentStep}"]`).addClass('active');
+                $('.current-step-num').text(currentStep);
+
+                const progressPercent = (currentStep / totalSteps) * 100;
+                $('.progress-fill').css('width', progressPercent + '%');
+
+                $('#prevStepBtn').prop('disabled', currentStep === 1);
+
+                if (currentStep === totalSteps) {
+                    $('#nextStepBtn').html(`
+                        Complete Day
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                    `);
+                } else {
+                    $('#nextStepBtn').html(`
+                        Next
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                        </svg>
+                    `);
+                }
+            }
+
+            $('#prevStepBtn').off('click').on('click', function() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateStepDisplay();
+                }
+            });
+
+            $('#nextStepBtn').off('click').on('click', function() {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateStepDisplay();
+                } else {
+                    // Mark all activities as complete
+                    completeDayActivities(activities);
+                }
+            });
+        }
+
+        // Render test content
+        function renderTestContent(questionsJson, solutionsJson) {
+            try {
+                const questions = JSON.parse(questionsJson);
+                const solutions = solutionsJson ? JSON.parse(solutionsJson) : [];
+
+                let html = '<div class="test-questions">';
+
+                questions.forEach((q, idx) => {
+                    html += `
+                        <div class="question-block">
+                            <p class="question-text"><strong>Question ${idx + 1}:</strong> ${q.question}</p>
+                            ${q.options ? `
+                                <ul class="question-options">
+                                    ${q.options.map(opt => `<li>${opt}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                if (solutions.length > 0) {
+                    html += '<div class="test-solutions"><h4>Solutions</h4>';
+                    solutions.forEach((sol, idx) => {
+                        html += `
+                            <div class="solution-block">
+                                <p><strong>Answer ${idx + 1}:</strong> ${sol.answer}</p>
+                                <p class="explanation">${sol.explanation}</p>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                return html;
+            } catch (e) {
+                return questionsJson.replace(/\n/g, '<br>');
+            }
+        }
+
+        // Complete all activities for the day
+        function completeDayActivities(activities) {
+            let completedCount = 0;
+
+            activities.forEach(activity => {
+                if (!activity.completed_at) {
+                    $.ajax({
+                        url: `/api/course/${courseId}/task/${activity.id}/complete`,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({}),
+                        success: function() {
+                            completedCount++;
+                            if (completedCount === activities.length) {
+                                // All activities completed
+                                loadStatistics();
+                                renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+
+                                // Show success message
+                                $('#lessonPanel .lesson-content').html(`
+                                    <div class="completion-message">
+                                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                            <polyline points="22 4 12 14.01 9 11.01"/>
+                                        </svg>
+                                        <h2>Day Complete!</h2>
+                                        <p>Great job! You've completed all activities for today.</p>
+                                        <button class="btn-primary" onclick="selectNextDay()">Continue to Next Day</button>
+                                    </div>
+                                `);
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error completing activity:', activity.id, xhr.responseText);
+                        }
+                    });
+                }
+            });
+
+            if (completedCount === 0 && activities.every(a => a.completed_at)) {
+                // Already completed
+                $('#lessonPanel .lesson-content').html(`
+                    <div class="completion-message">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <h2>Already Complete</h2>
+                        <p>You've already completed this day.</p>
+                        <button class="btn-primary" onclick="selectNextDay()">Continue to Next Day</button>
+                    </div>
+                `);
+            }
+        }
+
+        // Select the next day
+        function selectNextDay() {
+            const currentDateObj = new Date(selectedDate);
+            currentDateObj.setDate(currentDateObj.getDate() + 1);
+
+            const nextDateStr = currentDateObj.toISOString().split('T')[0];
+
+            // Check if we need to change month
+            if (currentDateObj.getMonth() !== currentDate.getMonth()) {
+                currentDate = currentDateObj;
+                renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+            }
+
+            // Select the next day
+            setTimeout(() => {
+                $(`.calendar-day[data-date="${nextDateStr}"]`).click();
+            }, 100);
+        }
+
+        // Toggle task completion
+        function toggleTaskCompletion(taskId, complete) {
+            const endpoint = complete ? 'complete' : 'incomplete';
+
+            $.ajax({
+                url: `/api/course/${courseId}/task/${taskId}/${endpoint}`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({}),
+                success: function(response) {
+                    console.log('Task updated successfully:', response);
+                    // Reload tasks and statistics
+                    if (selectedDate) {
+                        loadTasksForDate(selectedDate);
+                    }
+                    loadStatistics();
+                    renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating task:', error, xhr.responseText);
+                    alert('Error updating task: ' + (xhr.responseJSON?.error || error));
+                }
+            });
+        }
+
+        // Helper function to check if two dates are the same day
+        function isSameDay(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getDate() === date2.getDate();
+        }
+
+        // Toggle topic accordion
+        function toggleTopic(topicId) {
+            const content = $(`#topic-${topicId}`);
+            const arrow = $(`#topic-${topicId}`).prev().find('.topic-arrow');
+
+            content.slideToggle(300);
+            arrow.toggleClass('open');
+        }
+
+        // Toggle subsection accordion
+        function toggleSubsection(topicId, subsection) {
+            const content = $(`#topic-${topicId}-${subsection}`);
+            const arrow = content.prev().find('.subsection-arrow');
+
+            content.slideToggle(300);
+            arrow.toggleClass('open');
+        }
+
+        // Check practice answer with OLEG
+        function checkPracticeAnswer(stepNumber) {
+            const practiceArea = $(`.lesson-step[data-step="${stepNumber}"] .practice-input-area`);
+            const answerInput = practiceArea.find('.practice-answer-input');
+            const feedback = $(`#feedback-${stepNumber}`);
+            const question = practiceArea.data('question');
+
+            const userAnswer = answerInput.val().trim();
+
+            if (!userAnswer) {
+                feedback.html('<div class="feedback-warning">Please enter an answer first!</div>').show();
+                return;
+            }
+
+            feedback.html(`
+                <div class="feedback-loading">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span>OLEG is checking your answer...</span>
+                </div>
+            `).show();
+
+            // Send to OLEG for checking
+            $.ajax({
+                url: '/send',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    formdata: `You are a professional teacher reviewing a student's practice question answer. Provide direct, clear feedback in second person (using "you" and "your").\n\nQuestion: ${question}\n\nThe student answered: "${userAnswer}"\n\nProvide feedback that:\n1. States if the answer is correct, incorrect, or partially correct\n2. If incorrect, explains what the correct answer should be\n3. If partially correct, notes what's right and what's missing\n4. Is professional and straightforward - not overly enthusiastic or patronizing\n5. Is concise (2-3 sentences maximum)\n\nBe helpful and clear, but keep the tone professional. No phrases like "you can be proud" or excessive praise.`
+                }),
+                success: function(data) {
+                    feedback.html(`
+                        <div class="feedback-success">
+                            <strong>OLEG's Feedback:</strong>
+                            <p>${data.response}</p>
+                        </div>
+                    `).show();
+                },
+                error: function() {
+                    feedback.html('<div class="feedback-error">Error getting feedback. Please try again.</div>').show();
+                }
+            });
+        }
     </script>
 </body>
 </html>

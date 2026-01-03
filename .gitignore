@@ -2,7 +2,7 @@
 
 # Environment variables
 .env
-.claude
+
 # Python
 __pycache__/
 *.py[cod]
@@ -33,6 +33,7 @@ flask_session1/
 
 # OS
 .DS_Store
+.claude
 Thumbs.db
 
 # Project specific

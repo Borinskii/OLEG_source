@@ -42,10 +42,10 @@
 
         <!-- Courses Grid -->
         <div class="courses-container">
-            {% if buttons %}
+            {% if courses %}
                 <div class="courses-grid">
-                    {% for button in buttons %}
-                    <div class="course-card" onclick="window.location.href='/course/{{ button }}'">
+                    {% for course in courses %}
+                    <div class="course-card" onclick="window.location.href='/course/{{ course.id }}'">
                         <div class="course-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
@@ -53,7 +53,7 @@
                             </svg>
                         </div>
                         <div class="course-info">
-                            <h3 class="course-title">{{ button }}</h3>
+                            <h3 class="course-title">{{ course.name }}</h3>
                             <p class="course-meta">20-week study plan • AI-generated</p>
                         </div>
                         <div class="course-arrow">

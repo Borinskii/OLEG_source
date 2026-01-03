@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
+    <title>Login - O.L.E.G.</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Logo and Title -->
+            <div class="auth-header">
+                <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="auth-logo">
+                <h1 class="auth-title">Welcome to O.L.E.G.</h1>
+                <p class="auth-subtitle">Sign in to continue learning</p>
+            </div>
+
+            <!-- Login Form -->
+            <form method="POST" action="/login" class="auth-form">
+                {% if error %}
+                <div class="alert alert-error">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                {% if success %}
+                <div class="alert alert-success">
+                    {{ success }}
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="form-input"
+                        placeholder="Enter your username"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-input"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-primary btn-block">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Register Link -->
+            <div class="auth-footer">
+                <p class="auth-footer-text">
+                    Don't have an account?
+                    <a href="/register" class="auth-link">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
