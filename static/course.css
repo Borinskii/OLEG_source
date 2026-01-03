@@ -1,8 +1,7 @@
-/* style_course.css - Course Display Styling */
+/* course.css - Course Display Page */
 
 :root {
     --primary: #4B7BFF;
-    --primary-dark: #3B6BE8;
     --primary-light: #E8F0FF;
     --success: #10B981;
     --text-primary: #1F2937;
@@ -15,51 +14,60 @@
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-* {
+html, body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
     background: var(--bg-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
     color: var(--text-primary);
     line-height: 1.6;
 }
 
-/* Course Header */
-.course-header {
+/* Top Navigation */
+.main-nav {
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border);
-    padding: 1rem 1.5rem;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: var(--shadow-sm);
 }
 
-.back-btn {
+.btn-back {
     background: none;
     border: 1px solid var(--border);
     color: var(--text-secondary);
-    padding: 0.5rem 1rem;
+    cursor: pointer;
+    padding: 0.625rem 1.125rem;
     border-radius: 8px;
     font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
+    font-weight: 600;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.back-btn:hover {
+.btn-back:hover {
     background: var(--bg-primary);
-    border-color: var(--text-muted);
+    color: var(--text-primary);
+    border-color: var(--primary);
 }
 
-.chat-toggle-btn {
+/* Top Navigation */
+.btn-chat {
     background: var(--primary);
     color: white;
     border: none;
@@ -68,15 +76,30 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     transition: all 0.2s;
 }
 
-.chat-toggle-btn:hover {
+.btn-chat:hover {
     background: var(--primary-dark);
     transform: translateY(-1px);
 }
 
-/* Course Content */
+.course-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Main Content */
 .course-content {
     max-width: 900px;
     margin: 0 auto;
@@ -84,8 +107,8 @@ body {
 }
 
 .course-title {
+    margin-bottom: 2.5rem;
     text-align: center;
-    margin-bottom: 2rem;
 }
 
 .course-title h1 {
@@ -96,7 +119,7 @@ body {
 }
 
 .course-title h3 {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 400;
     color: var(--text-secondary);
 }
@@ -107,19 +130,27 @@ body {
     border-radius: 16px;
     padding: 2rem;
     box-shadow: var(--shadow);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .study-guide-section h2 {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid var(--border);
 }
 
-/* Topic Sections */
+.study-guide-section h2 svg {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+/* Topic Cards */
 .topic-section {
     background: var(--bg-primary);
     border: 1px solid var(--border);
@@ -135,7 +166,7 @@ body {
 .topic-title {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--text-primary);
     margin-bottom: 1.25rem;
     padding-bottom: 0.75rem;
     border-bottom: 2px solid var(--primary-light);
@@ -152,8 +183,10 @@ body {
 .subsection-title {
     font-size: 0.875rem;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     color: var(--primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .subsection-content {
@@ -162,17 +195,11 @@ body {
     font-size: 0.9375rem;
 }
 
-.topic-subsection p {
-    color: var(--text-primary);
-    line-height: 1.7;
-    margin-bottom: 0.5rem;
-}
-
 .key-terms-list,
 .resources-list {
     list-style: none;
     padding: 0;
-    margin: 0.5rem 0;
+    margin: 0;
 }
 
 .key-terms-list li,
@@ -188,25 +215,103 @@ body {
     border-bottom: none;
 }
 
-/* Schedule Container */
-.schedule-container {
+/* Schedule Section */
+.schedule-section {
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+    border: 1px solid #C7D2FE;
+    border-radius: 12px;
+    padding: 1.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    background: white;
+    color: var(--primary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.375rem;
+}
+
+.info-content p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.info-content code {
+    background: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Schedule Container - Timeline Design */
+.schedule-container {
+    position: relative;
     margin-top: 1.5rem;
+    padding-left: 2.5rem;
+}
+
+/* Timeline vertical line */
+.schedule-container::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 2px;
 }
 
 .week-section {
+    position: relative;
     background: var(--bg-primary);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1.5rem;
-    transition: all 0.2s;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s;
+}
+
+/* Timeline dot for week sections */
+.week-section::before {
+    content: '';
+    position: absolute;
+    left: -1.875rem;
+    top: 1.75rem;
+    width: 1rem;
+    height: 1rem;
+    background: var(--primary);
+    border: 3px solid var(--bg-secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--primary-light);
+    z-index: 1;
 }
 
 .week-section:hover {
-    box-shadow: var(--shadow-sm);
-    border-color: var(--primary-light);
+    box-shadow: var(--shadow);
+    border-color: var(--primary);
+    transform: translateX(4px);
 }
 
 .week-header {
@@ -226,21 +331,47 @@ body {
 
 .day-item {
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
+    padding-left: 1rem;
+    border-left: 2px solid var(--border);
     color: var(--text-primary);
     font-size: 0.9375rem;
     line-height: 1.6;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+}
+
+.day-item:hover {
+    border-left-color: var(--primary);
+    padding-left: 1.25rem;
 }
 
 .day-item:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
 }
 
 .checkpoint-section {
+    position: relative;
     background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-    border: 1px solid #86EFAC;
+    border: 2px solid var(--success);
     border-radius: 12px;
     padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Timeline dot for checkpoint sections - larger and different color */
+.checkpoint-section::before {
+    content: '';
+    position: absolute;
+    left: -1.875rem;
+    top: 1.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    background: var(--success);
+    border: 3px solid var(--bg-secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px #DCFCE7;
+    z-index: 1;
 }
 
 .checkpoint-header {
@@ -323,20 +454,23 @@ body {
     gap: 0.5rem;
 }
 
+.chat-sidebar-header img {
+    border-radius: 6px;
+}
+
 .close-chat-btn {
     background: none;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1.5rem;
-    padding: 0.25rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 6px;
+    font-size: 1.5rem;
+    line-height: 1;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
 }
 
 .close-chat-btn:hover {
@@ -353,43 +487,10 @@ body {
     gap: 1rem;
 }
 
-.messages::-webkit-scrollbar {
-    width: 6px;
-}
-
-.messages::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.messages::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 10px;
-}
-
-.bot-message,
-.user-message {
+.bot-message {
     display: flex;
     gap: 0.75rem;
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.bot-message {
     align-items: flex-start;
-}
-
-.user-message {
-    justify-content: flex-end;
 }
 
 .bot-avatar {
@@ -399,49 +500,62 @@ body {
     flex-shrink: 0;
 }
 
-.bot-message > div,
-.user-message > div {
-    max-width: 75%;
-    padding: 0.875rem 1rem;
-    border-radius: 12px;
-    line-height: 1.6;
-}
-
 .bot-message > div {
     background: var(--bg-primary);
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
     color: var(--text-primary);
-    border-bottom-left-radius: 4px;
+    max-width: 80%;
 }
 
-.user-message > div {
+.user-message {
     background: var(--primary);
     color: white;
-    border-bottom-right-radius: 4px;
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    border-top-right-radius: 4px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    align-self: flex-end;
+    max-width: 80%;
 }
 
 .loading {
-    font-style: italic;
-    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.loading::after {
+    content: '...';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
 }
 
 .input-container {
     border-top: 1px solid var(--border);
     padding: 1.25rem 1.5rem;
-    background: var(--bg-secondary);
     display: flex;
     gap: 0.75rem;
 }
 
 .input-container input {
     flex: 1;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--border);
-    background: var(--bg-primary);
     border-radius: 8px;
-    padding: 0.625rem 1rem;
     font-size: 0.9375rem;
-    color: var(--text-primary);
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .input-container input:focus {
@@ -453,9 +567,9 @@ body {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0.625rem 1.125rem;
+    padding: 0.75rem 1.5rem;
     border-radius: 8px;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -472,11 +586,55 @@ body {
         right: -100%;
     }
 
+    .main-nav {
+        padding: 1rem;
+    }
+
     .course-content {
         padding: 1.5rem 1rem;
     }
 
+    .btn-back span {
+        display: none;
+    }
+
+    .course-badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .schedule-container {
+        padding-left: 2rem;
+    }
+
+    .schedule-container::before {
+        left: 0.5rem;
+    }
+
+    .week-section::before,
+    .checkpoint-section::before {
+        left: -1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
     .course-title h1 {
         font-size: 1.75rem;
+    }
+
+    .topic-title {
+        font-size: 1.125rem;
+    }
+
+    .study-guide-section {
+        padding: 1.5rem 1rem;
+    }
+
+    .study-guide-section h2 {
+        font-size: 1.25rem;
     }
 }

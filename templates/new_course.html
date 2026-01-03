@@ -2,102 +2,118 @@
 <html lang="en">
 <head>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
-    <title>O.L.E.G. - New Course</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        #fileUpload {
-            display: none;
-        }
-    </style>
+    <title>Create New Course - O.L.E.G.</title>
 </head>
-
 <body>
-    <div class="header">
-        <h1>
-            <img src="{{ url_for('static', filename='icon.png') }}" class="logo-icon" alt="OLEG">
-            O.L.E.G.
-        </h1>
-        <button class="btn btn-finish" id="new_created_course">✓ FINISH COURSE</button>
-    </div>
-
-    <div class="chat-container">
-        <div class="messages" id="messages">
-            <div class="bot-message">
-                <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
-                <div>Hello! I'm OLEG, your educational assistant. Tell me about the course you want to create, or upload your course materials!</div>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <button class="btn-back" onclick="window.location.href='/'">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span>Back to Courses</span>
+            </button>
+            <div class="nav-title">
+                <h1>Create New Course</h1>
+                <p>Tell OLEG what you want to learn</p>
             </div>
         </div>
-        <div class="input-container">
-            <input type="file" id="fileUpload" accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.xlsx,.docx">
-            <img src="{{ url_for('static', filename='load_file.png') }}" alt="Upload" class="btn-icon" id="uploadTrigger" title="Upload file">
-            <input type="text" id="userInput" placeholder="Type your message..." />
-            <button id="sendButton" class="btn">Send</button>
+        <button class="btn-finish" id="finishButton">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            Finish Course
+        </button>
+    </nav>
+
+    <!-- Chat Wrapper -->
+    <div class="chat-wrapper">
+        <div class="chat-container">
+            <!-- Messages Area -->
+            <div class="messages-area" id="messagesArea">
+                <div class="message-group bot-group">
+                    <div class="message-avatar">
+                        <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble bot-message">
+                            Hi! I'm OLEG, your AI learning assistant. Tell me what you want to learn, and I'll create a personalized 20-week study plan for you. For example: "I want to learn Machine Learning" or "Help me master Python programming".
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <button class="btn-attach" id="attachButton" title="Upload PDF materials (optional)">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                    <input type="text" id="userInput" placeholder="Tell me what you want to learn..." autocomplete="off">
+                    <button class="btn-send" id="sendButton">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-hint">Tip: You can upload PDF materials to help OLEG understand what you want to learn</p>
+            </div>
         </div>
     </div>
 
     <script>
         $(document).ready(function(){
-            $('#new_created_course').click(function(){
-                $(this).text('⏳ Creating course...').prop('disabled', true);
-                $.post('/finish', function(response) {
-                    window.location.href = '/';
-                }).fail(function() {
-                    alert('Error creating course. Please try again.');
-                    $('#new_created_course').text('✓ FINISH COURSE').prop('disabled', false);
-                });
+            // Handle file attachment
+            $('#attachButton').click(function(){
+                $('#fileInput').click();
             });
 
-            $('#uploadTrigger').click(function () {
-                $('#fileUpload').click();
+            $('#fileInput').change(function(){
+                const file = this.files[0];
+                if (file) {
+                    uploadFile(file);
+                }
             });
 
-            $('#fileUpload').change(function () {
-                loadFile();
-            });
-
-            function loadFile() {
-                const file = $('#fileUpload')[0].files[0];
-                if (!file) return;
-
-                const formData = new FormData();
-                formData.append('pdf_file', file);
-
-                const loadingMsg = $(`<div class="bot-message">
-                    <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
-                    <div class="loading">Processing file</div>
-                </div>`);
-                $('#messages').append(loadingMsg);
-                scrollToBottom();
-
-                $.ajax({
-                    url: '/load_file',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        loadingMsg.remove();
-                        const botMessage = $(`<div class="bot-message">
-                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
-                            <div>${data.response}</div>
-                        </div>`);
-                        $('#messages').append(botMessage);
-                        scrollToBottom();
-                    },
-                    error: function () {
-                        loadingMsg.remove();
-                        alert('Error uploading file');
-                    }
-                });
-            }
-
+            // Handle send message
             $('#sendButton').click(sendMessage);
-            $('#userInput').keypress(function (event) {
+            $('#userInput').keypress(function(event) {
                 if (event.key === 'Enter') {
+                    event.preventDefault();
                     sendMessage();
+                }
+            });
+
+            // Handle finish button
+            $('#finishButton').click(function(){
+                if (confirm('Ready to generate your complete study guide and 20-week schedule?')) {
+                    $(this).prop('disabled', true).text('Generating...');
+
+                    $.ajax({
+                        url: '/finish',
+                        type: 'POST',
+                        success: function(data) {
+                            if (data.status === 'success') {
+                                alert('Course created successfully!');
+                                window.location.href = '/course/' + encodeURIComponent(data.course_name);
+                            } else {
+                                alert('Error creating course: ' + data.message);
+                                $('#finishButton').prop('disabled', false).html('<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Finish Course');
+                            }
+                        },
+                        error: function() {
+                            alert('Error creating course. Please try again.');
+                            $('#finishButton').prop('disabled', false).html('<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Finish Course');
+                        }
+                    });
                 }
             });
 
@@ -105,42 +121,117 @@
                 const messageText = $('#userInput').val().trim();
                 if (messageText === '') return;
 
-                const userMessage = $('<div class="message user-message"></div>').text(messageText);
-                $('#messages').append(userMessage);
+                appendUserMessage(messageText);
                 $('#userInput').val('');
-                scrollToBottom();
 
-                const loadingMsg = $(`<div class="bot-message">
-                    <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
-                    <div class="loading">Thinking</div>
-                </div>`);
-                $('#messages').append(loadingMsg);
-                scrollToBottom();
+                appendLoading();
 
                 $.ajax({
                     url: '/send',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ formdata: messageText }),
-                    success: function (data) {
-                        loadingMsg.remove();
-                        const botMessage = $(`<div class="bot-message">
-                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG" class="bot-avatar">
-                            <div>${data.response}</div>
-                        </div>`);
-                        $('#messages').append(botMessage);
-                        scrollToBottom();
+                    success: function(data) {
+                        removeLoading();
+                        appendBotMessage(data.response);
                     },
-                    error: function () {
-                        loadingMsg.remove();
-                        alert('Error sending message');
+                    error: function() {
+                        removeLoading();
+                        appendBotMessage('Sorry, I encountered an error. Please try again.');
                     }
                 });
             }
 
+            function uploadFile(file) {
+                const formData = new FormData();
+                formData.append('pdf_file', file);
+
+                appendUserMessage('📎 Uploaded: ' + file.name);
+                appendLoading();
+
+                $.ajax({
+                    url: '/load_file',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        removeLoading();
+                        if (data.response) {
+                            appendBotMessage(data.response);
+                        } else if (data.error) {
+                            appendBotMessage('Error: ' + data.error);
+                        }
+                    },
+                    error: function(xhr) {
+                        removeLoading();
+                        const error = xhr.responseJSON?.error || 'Error uploading file';
+                        appendBotMessage('Error: ' + error);
+                    }
+                });
+            }
+
+            function appendUserMessage(text) {
+                const html = `
+                    <div class="message-group user-group">
+                        <div class="message-content">
+                            <div class="message-bubble user-message">${escapeHtml(text)}</div>
+                        </div>
+                    </div>
+                `;
+                $('#messagesArea').append(html);
+                scrollToBottom();
+            }
+
+            function appendBotMessage(text) {
+                const html = `
+                    <div class="message-group bot-group">
+                        <div class="message-avatar">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble bot-message">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                `;
+                $('#messagesArea').append(html);
+                scrollToBottom();
+            }
+
+            function appendLoading() {
+                const html = `
+                    <div class="message-group bot-group loading-group">
+                        <div class="message-avatar">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble bot-message loading-message">
+                                <div class="typing-indicator">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#messagesArea').append(html);
+                scrollToBottom();
+            }
+
+            function removeLoading() {
+                $('#messagesArea .loading-group').remove();
+            }
+
             function scrollToBottom() {
-                const messages = $('#messages');
-                messages.scrollTop(messages[0].scrollHeight);
+                const area = $('#messagesArea');
+                area.scrollTop(area[0].scrollHeight);
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
         });
     </script>

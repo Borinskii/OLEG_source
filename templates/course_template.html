@@ -4,17 +4,32 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_course.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='course.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>{{ course_name }} - O.L.E.G.</title>
 </head>
 <body>
-    <div class="course-header">
-        <button class="back-btn" onclick="window.location.href='/'">← Back to Home</button>
-        <h2 style="color: #66bb6a; flex: 1; text-align: center;">{{ course_name }}</h2>
-        <button class="chat-toggle-btn" id="toggleChat">🎓 Ask OLEG</button>
-    </div>
+    <nav class="main-nav">
+        <button class="btn-back" onclick="window.location.href='/'">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
+            </svg>
+            <span>Back to Home</span>
+        </button>
+        <div class="course-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            {{ course_name }}
+        </div>
+        <button class="btn-chat" id="toggleChat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Ask OLEG
+        </button>
+    </nav>
 
     <div class="course-content">
         <div class="course-title">
@@ -23,7 +38,13 @@
         </div>
 
         <div class="study-guide-section">
-            <h2>📚 Study Guide</h2>
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                Study Guide
+            </h2>
 
             {% set current_topic = [] %}
             {% set current_section = [] %}
@@ -38,29 +59,29 @@
                         {% set _ = current_topic.append(1) %}
                     {% elif '**Definition:**' in sentence or 'Definition:' in sentence %}
                         <div class="topic-subsection">
-                            <div class="subsection-title">📖 Definition</div>
+                            <div class="subsection-title">Definition</div>
                             <div class="subsection-content">{{ sentence.replace('**Definition:**', '').replace('Definition:', '').strip() }}</div>
                         </div>
                     {% elif '**Theoretical Foundations:**' in sentence or 'Theoretical Foundations:' in sentence %}
                         <div class="topic-subsection">
-                            <div class="subsection-title">🔬 Theoretical Foundations</div>
+                            <div class="subsection-title">Theoretical Foundations</div>
                             <div class="subsection-content">{{ sentence.replace('**Theoretical Foundations:**', '').replace('Theoretical Foundations:', '').strip() }}</div>
                         </div>
                     {% elif '**Practical Application:**' in sentence or 'Practical Application:' in sentence %}
                         <div class="topic-subsection">
-                            <div class="subsection-title">💡 Practical Application</div>
+                            <div class="subsection-title">Practical Application</div>
                             <div class="subsection-content">{{ sentence.replace('**Practical Application:**', '').replace('Practical Application:', '').strip() }}</div>
                         </div>
                     {% elif '**Key Terms:**' in sentence or 'Key Terms:' in sentence %}
                         <div class="topic-subsection">
-                            <div class="subsection-title">🔑 Key Terms</div>
+                            <div class="subsection-title">Key Terms</div>
                             <ul class="key-terms-list">
                     {% elif '**Resources:**' in sentence or 'Resources:' in sentence %}
                         {% if current_section %}
                             </ul>
                         {% endif %}
                         <div class="topic-subsection">
-                            <div class="subsection-title">📚 Resources</div>
+                            <div class="subsection-title">Resources</div>
                             <ul class="resources-list">
                     {% elif sentence.strip().startswith('*') or sentence.strip().startswith('-') %}
                         <li>{{ sentence.replace('*', '').replace('-', '').strip() }}</li>
@@ -75,8 +96,71 @@
         </div>
 
         <div class="study-guide-section">
-            <h2>📅 20-Week Study Schedule</h2>
-            <p><em>Your personalized 20-week study schedule has been generated! Check the <strong>schedule.txt</strong> file in your project directory for the complete daily study plan with checkpoint tests and solutions.</em></p>
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                20-Week Study Schedule
+            </h2>
+            {% if schedule_content %}
+                <div class="schedule-container">
+                    {% set in_week = [] %}
+                    {% set in_checkpoint = [] %}
+                    {% for line in schedule_content %}
+                        {% if line.strip() %}
+                            {% if '**Week' in line or (line.strip().startswith('Week ') and '(' in line) %}
+                                {% if in_week %}
+                                    </ul></div>
+                                    {% set _ = in_week.pop() %}
+                                {% endif %}
+                                <div class="week-section">
+                                    <h3 class="week-header">{{ line.replace('**', '').strip() }}</h3>
+                                    <ul class="week-days">
+                                {% set _ = in_week.append(1) %}
+                            {% elif '**Checkpoint Test' in line or (line.strip().startswith('Checkpoint Test') and ':' not in line) %}
+                                {% if in_week %}
+                                    </ul></div>
+                                    {% set _ = in_week.pop() %}
+                                {% endif %}
+                                <div class="checkpoint-section">
+                                    <h3 class="checkpoint-header">{{ line.replace('**', '').strip() }}</h3>
+                                {% set _ = in_checkpoint.append(1) %}
+                            {% elif 'Questions:' in line %}
+                                <div class="checkpoint-subsection">
+                                    <h4>Questions</h4>
+                                    <ol class="checkpoint-list">
+                            {% elif 'Solutions:' in line or 'Answers:' in line %}
+                                    </ol>
+                                </div>
+                                <div class="checkpoint-subsection">
+                                    <h4>Solutions</h4>
+                                    <ol class="checkpoint-list">
+                            {% elif line.strip().startswith('- Day') or line.strip().startswith('Day ') %}
+                                <li class="day-item">{{ line.replace('-', '').strip() }}</li>
+                            {% elif line.strip().startswith('-') or (line.strip() and line.strip()[0].isdigit() and '.' in line[:3]) %}
+                                <li>{{ line.replace('-', '').strip() }}</li>
+                            {% elif line.strip() and not line.strip().startswith('*') %}
+                                {% if not in_checkpoint %}
+                                    <p class="schedule-note">{{ line.strip() }}</p>
+                                {% else %}
+                                    <p>{{ line.strip() }}</p>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if in_week %}
+                        </ul></div>
+                    {% endif %}
+                    {% if in_checkpoint %}
+                        </ol></div></div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p><em>Your personalized 20-week study schedule has been generated! Check the <strong>schedule.txt</strong> file in your project directory for the complete daily study plan with checkpoint tests and solutions.</em></p>
+            {% endif %}
         </div>
     </div>
 

@@ -10,7 +10,7 @@ env.read_env()
 # Fireworks AI configuration
 FIREWORKS_API_KEY = env.str("FIREWORKS_API_KEY")
 FIREWORKS_API_URL = "https://api.fireworks.ai/inference/v1/chat/completions"
-MODEL_NAME = 'accounts/fireworks/models/llama-v3p1-70b-instruct'
+MODEL_NAME = 'accounts/fireworks/models/llama-v3p3-70b-instruct'
 
 
 def chat(

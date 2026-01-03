@@ -2,7 +2,7 @@
 
 # Environment variables
 .env
-
+.claude
 # Python
 __pycache__/
 *.py[cod]

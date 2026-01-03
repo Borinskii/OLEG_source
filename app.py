@@ -110,7 +110,16 @@ def course_page(course_name):
     else:
         final_respond = ["Course content not found. Please regenerate the course."]
 
-    return render_template('course_template.html', course_name=course_name, model_respond1=final_respond)
+    # Load schedule content
+    schedule_content = []
+    if os.path.exists("schedule.txt"):
+        with open("schedule.txt", "r", encoding="UTF-8") as f:
+            schedule_content = f.read().split('\n')
+
+    return render_template('course_template.html',
+                         course_name=course_name,
+                         model_respond1=final_respond,
+                         schedule_content=schedule_content)
 
 
 @app.route('/load_file', methods=['POST'])
