@@ -7,8 +7,8 @@ An AI-powered educational platform that generates personalized study courses wit
 ## Features
 
 ### Learning Interface
-- **Duolingo-Style Calendar** - Interactive calendar showing your daily study schedule
-- **Daily Lessons** - Step-by-step learning content for each day (Coursera/Stepik-style)
+- **Interactive Calendar** - Visual calendar showing your daily study schedule and progress
+- **Daily Lessons** - Step-by-step learning content for each day with structured modules
 - **Interactive Practice** - Answer practice questions and get instant AI feedback
 - **Test Days** - Special test days marked on calendar with checkpoint assessments
 - **Progress Tracking** - Visual tracking of completed days and overall progress
@@ -502,7 +502,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [Fireworks AI](https://fireworks.ai) for providing the Llama 3.3 70B API
 - [Flask](https://flask.palletsprojects.com/) for the web framework
-- Inspired by Duolingo, Coursera, and Stepik learning platforms
 - Community feedback and contributions
 
 ## Support
