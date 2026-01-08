@@ -18,6 +18,7 @@ app = Flask(__name__)
 # Flask session configuration
 app.config['SECRET_KEY'] = 'supersecretkey'
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for static files in development
 Session(app)
 
 # Flask-Login configuration
@@ -139,7 +140,14 @@ def send():
     bot_response, updated_chat_history = generate_bot_response(user_message, session['chat_history'])
     session['chat_history'] = updated_chat_history
 
-    return jsonify({'response': bot_response})
+    # Check if we should show duration selector
+    message_count = len([m for m in updated_chat_history if m.startswith('user:')])
+    show_duration_selector = message_count >= 3
+
+    return jsonify({
+        'response': bot_response,
+        'show_duration_selector': show_duration_selector
+    })
 
 
 @app.route('/clear', methods=['POST'])
@@ -158,6 +166,9 @@ def handle_finish():
     duration_weeks = 20
     if request.json and 'duration_weeks' in request.json:
         duration_weeks = int(request.json['duration_weeks'])
+
+    print(f"DEBUG: Received duration_weeks: {duration_weeks}")
+    print(f"DEBUG: Request JSON: {request.json}")
 
     # Get chat history
     chat_history = session.get('chat_history', [])
@@ -206,9 +217,16 @@ def handle_finish():
         # Parse and save activities
         from funcs import parse_schedule_to_activities
         activities = parse_schedule_to_activities(schedule, course_id, start_date)
+
+        print(f"DEBUG: Schedule text length: {len(schedule)}")
+        print(f"DEBUG: First 500 chars of schedule:\n{schedule[:500]}")
+        print(f"DEBUG: Parsed {len(activities)} activities")
+
         if activities:
             db.bulk_create_activities(activities)
-            print(f"DEBUG: Created {len(activities)} activities")
+            print(f"DEBUG: Created {len(activities)} activities in database")
+        else:
+            print("WARNING: No activities were parsed from the schedule!")
 
         # Initialize streak record
         db.initialize_user_streak(current_user.id, course_id)
@@ -395,21 +413,21 @@ def generate_complete_schedule(study_guide, duration_weeks=20):
 
     total_days = duration_weeks * 7
 
-    prompt = f"""You are OLEG. Based on this study guide, create a COMPLETE {duration_weeks}-week study schedule ({total_days} days total).
+    prompt = f"""You are OLEG. Based on this study guide, create a COMPLETE {duration_weeks}-week study schedule.
 
 Study Guide:
 {study_guide_summary}
 
-Requirements:
-- {duration_weeks} weeks total
+CRITICAL FORMATTING REQUIREMENTS:
+- You MUST create exactly {duration_weeks} weeks
+- Each week MUST have exactly 7 days
+- EVERY day must start with "- Day X:" or "Day X:" (where X is the day number starting from 1)
+- Include time duration for each day (e.g., "30 min", "45 min", "1 hour")
 - Maximum 1 hour of study per day
-- Distribute all topics evenly across all weeks
-- Include checkpoint tests after completing each major topic with solutions
-- Each week should have 7 days of activities
 
-Generate the ENTIRE {duration_weeks}-week schedule in ONE response. Format each week clearly:
+Example format (FOLLOW THIS EXACTLY):
 
-**Week 1 (September 1-7)**
+**Week 1**
 - Day 1: Introduction to [Topic] (30 min)
 - Day 2: Study [Subtopic] (45 min)
 - Day 3: Practice [Concept] (1 hour)
@@ -418,21 +436,19 @@ Generate the ENTIRE {duration_weeks}-week schedule in ONE response. Format each 
 - Day 6: Study [Resource] (45 min)
 - Day 7: Weekly review (30 min)
 
-**Week 2 (September 8-14)**
-[Continue pattern...]
+**Week 2**
+- Day 8: [Next Topic] (45 min)
+- Day 9: [Continue...] (30 min)
+...continue with Days 10-14
 
-**Checkpoint Test 1** (after Week 3-4)
-Questions:
-1. [Question about covered material]
-2. [Question about covered material]
-3. [Question about covered material]
+Continue this pattern for ALL {duration_weeks} weeks (Days 1-{total_days}).
 
-Solutions:
-1. [Detailed solution]
-2. [Detailed solution]
-3. [Detailed solution]
+Remember:
+- Day numbers must be continuous (1, 2, 3... up to {total_days})
+- Each day line MUST start with "- Day" or "Day"
+- Include duration in parentheses
 
-Generate ALL {duration_weeks} weeks with appropriate checkpoint tests distributed throughout:"""
+Generate the complete schedule now:"""
 
     generated_text = chat(
         model=model_l70_1,
@@ -449,20 +465,38 @@ def generate_bot_response(message, chat_history):
 
     # Only use last 10 messages for context (not entire history!)
     recent_history = chat_history[-10:] if len(chat_history) > 10 else chat_history
+    message_count = len([m for m in chat_history if m.startswith('user:')])
 
-    prompt = f"""You are OLEG: An educational assistant helping users create study courses.
+    # Determine conversation stage
+    stage_hint = ""
+    if message_count == 1:
+        stage_hint = "\n\nAsk ONE friendly question about their current knowledge level or experience with this topic."
+    elif message_count == 2:
+        stage_hint = "\n\nAsk ONE question about their learning goals or what they want to achieve."
+    elif message_count == 3:
+        stage_hint = "\n\nAsk ONE final question about any specific areas they want to focus on, then suggest they're ready to create the course."
+    elif message_count >= 4:
+        stage_hint = "\n\nYou have enough information. Warmly let them know they can click 'Finish Course' to generate their personalized study plan."
 
-Be brief, friendly, and helpful. Ask clarifying questions if needed.
+    prompt = f"""You are OLEG: A friendly educational assistant collecting information to create personalized study courses.
+
+Your conversation style:
+- Ask ONE clear question at a time (not multiple questions)
+- Keep responses brief and conversational (1-2 sentences plus one question)
+- Be friendly and encouraging
+- Focus on understanding: what they want to learn, their current level, and their goals
+
+IMPORTANT: You're collecting requirements, NOT teaching yet. The actual learning content will be generated when they click "Finish Course".{stage_hint}
 
 Recent conversation:
 {chr(10).join(recent_history)}
 
-Respond briefly to the user's last message:"""
+Respond with ONE question (keep it brief and natural):"""
 
     generated_text = chat(
         model=model_l70,
         messages=[{"role": "user", "content": prompt}],
-        options={"max_tokens": 500, "temperature": 0.7}
+        options={"max_tokens": 300, "temperature": 0.7}
     )
 
     chat_history.append(f"assistant: {generated_text}")
@@ -677,6 +711,40 @@ def get_statistics(course_id):
     return jsonify({
         'statistics': stats,
         'streak': streak
+    })
+
+
+@app.route('/api/course/<int:course_id>/debug')
+@login_required
+def debug_course(course_id):
+    """Debug endpoint to see course schedule and activities"""
+    # Verify ownership
+    if not db.verify_course_ownership(course_id, current_user.id):
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    course = db.get_course_by_id(course_id)
+    if not course:
+        return jsonify({'error': 'Course not found'}), 404
+
+    # Get all activities for this course
+    from datetime import date
+    conn = db.get_db_connection()
+    activities = conn.execute(
+        """SELECT id, day_number, scheduled_date, title, activity_type, duration_minutes
+           FROM activities
+           WHERE course_id = ?
+           ORDER BY day_number""",
+        (course_id,)
+    ).fetchall()
+    conn.close()
+
+    return jsonify({
+        'course_name': course['name'],
+        'duration_weeks': course.get('duration_weeks', 'unknown'),
+        'start_date': course.get('start_date'),
+        'total_activities': len(activities),
+        'schedule_preview': course['schedule_data'][:1000] if course['schedule_data'] else 'No schedule',
+        'activities': [dict(a) for a in activities][:10]  # First 10 activities
     })
 
 

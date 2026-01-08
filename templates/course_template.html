@@ -4,7 +4,7 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='course.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='course.css') }}?v=5">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>{{ course_name }} - O.L.E.G.</title>
 </head>
@@ -408,6 +408,9 @@
         </div>
     </div>
 
+    <!-- Chat Overlay -->
+    <div class="chat-overlay" id="chatOverlay"></div>
+
     <!-- Chat Sidebar -->
     <div class="chat-sidebar" id="chatSidebar">
         <div class="chat-sidebar-header">
@@ -436,6 +439,12 @@
         let courseStartDate = null;
 
         $(document).ready(function(){
+            // Debug: Check if jQuery is loaded
+            console.log('jQuery loaded:', typeof $ !== 'undefined');
+            console.log('Toggle chat button exists:', $('#toggleChat').length);
+            console.log('Ask OLEG button exists:', $('#askOlegBtn').length);
+            console.log('Chat sidebar exists:', $('#chatSidebar').length);
+
             // Toggle study guide section
             $('#toggleStudyGuide').click(function() {
                 $('#studyGuideContent').slideToggle();
@@ -480,13 +489,24 @@
                 renderCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
             });
 
-            // Chat functionality
-            $('#toggleChat, #askOlegBtn').click(function(){
+            // Chat functionality - with debug logging
+            $('#toggleChat, #askOlegBtn').click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Ask OLEG button clicked!');
+                console.log('Chat sidebar before:', $('#chatSidebar').hasClass('active'));
                 $('#chatSidebar').addClass('active');
+                $('#chatOverlay').addClass('active');
+                console.log('Chat sidebar after:', $('#chatSidebar').hasClass('active'));
+                console.log('Overlay active:', $('#chatOverlay').hasClass('active'));
             });
 
-            $('#closeChat').click(function(){
+            $('#closeChat, #chatOverlay').click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Close chat clicked');
                 $('#chatSidebar').removeClass('active');
+                $('#chatOverlay').removeClass('active');
             });
 
             $('#sendButton').click(sendMessage);
@@ -778,7 +798,30 @@
             `;
 
             allSteps.forEach((step, idx) => {
-                const stepType = step.type || 'theory';
+                // Determine step type with better detection
+                let stepType = step.type || 'theory';
+
+                // Normalize step type (handle variations like "practice question")
+                if (typeof stepType === 'string' && stepType.toLowerCase().includes('practice')) {
+                    stepType = 'practice';
+                }
+
+                // Check if this looks like a practice question even if type isn't correctly set
+                const looksLikePractice =
+                    stepType === 'practice' ||
+                    (step.title && (
+                        step.title.toLowerCase().includes('practice') ||
+                        step.title.toLowerCase().includes('question') ||
+                        step.title.toLowerCase().includes('check') ||
+                        step.title.toLowerCase().includes('exercise') ||
+                        step.title.toLowerCase().includes('try') ||
+                        step.title.toLowerCase().includes('quiz')
+                    ));
+
+                if (looksLikePractice) {
+                    stepType = 'practice';
+                }
+
                 const activeClass = idx === 0 ? 'active' : '';
 
                 if (stepType === 'test') {

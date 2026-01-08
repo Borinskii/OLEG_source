@@ -4,7 +4,7 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}?v=2">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Create New Course - O.L.E.G.</title>
 </head>
@@ -42,34 +42,13 @@
                     </div>
                     <div class="message-content">
                         <div class="message-bubble bot-message">
-                            Hi! I'm OLEG, your AI learning assistant. First, choose your study plan duration:
+                            Hi! I'm OLEG, your AI learning assistant. Tell me what you want to learn, and I'll help you create a personalized study plan!
                         </div>
-                        <div class="duration-selector">
-                            <button class="duration-btn" data-weeks="4">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                                </svg>
-                                <span class="duration-label">4 Weeks</span>
-                                <span class="duration-desc">Quick Start</span>
-                            </button>
-                            <button class="duration-btn" data-weeks="8">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                                </svg>
-                                <span class="duration-label">8 Weeks</span>
-                                <span class="duration-desc">Balanced</span>
-                            </button>
-                            <button class="duration-btn active" data-weeks="20">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                                </svg>
-                                <span class="duration-label">20 Weeks</span>
-                                <span class="duration-desc">Comprehensive</span>
-                            </button>
+                        <div class="message-bubble bot-message" style="margin-top: 0.5rem;">
+                            For example: "I want to learn Machine Learning" or "Help me master Python programming"
                         </div>
-                        <div class="message-bubble bot-message" id="duration-confirm" style="display: none;">
-                            Great! Now tell me what you want to learn. For example: "I want to learn Machine Learning" or "Help me master Python programming".
+                        <div class="message-bubble bot-message" style="margin-top: 0.5rem; font-size: 0.875rem; opacity: 0.9;">
+                            💡 Tip: If you have a PDF syllabus or course description, you can upload it using the attachment button below!
                         </div>
                     </div>
                 </div>
@@ -78,7 +57,7 @@
             <!-- Input Area -->
             <div class="input-area">
                 <div class="input-container">
-                    <button class="btn-attach" id="attachButton" title="Upload PDF materials (optional)">
+                    <button class="btn-attach" id="attachButton" title="Upload PDF materials">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"/>
                         </svg>
@@ -97,15 +76,15 @@
     </div>
 
     <script>
-        let selectedDuration = 20; // Default 20 weeks
+        let selectedDuration = 8; // Default 8 weeks (balanced option)
+        let durationSelectorShown = false; // Track if we've shown the final selector
 
         $(document).ready(function(){
             // Handle duration selection
-            $('.duration-btn').click(function(){
+            $(document).on('click', '.duration-btn', function(){
                 $('.duration-btn').removeClass('active');
                 $(this).addClass('active');
                 selectedDuration = parseInt($(this).data('weeks'));
-                $('#duration-confirm').slideDown();
                 scrollToBottom();
             });
 
@@ -132,9 +111,15 @@
 
             // Handle finish button
             $('#finishButton').click(function(){
+                finishCourse();
+            });
+
+            function finishCourse() {
                 const durationText = selectedDuration === 1 ? 'week' : 'weeks';
                 if (confirm(`Ready to generate your complete study guide and ${selectedDuration}-${durationText} schedule?`)) {
-                    $(this).prop('disabled', true).text('Generating...');
+                    // Disable both buttons
+                    $('#finishButton').prop('disabled', true).text('Generating...');
+                    $('#finishCourseInline').prop('disabled', true).html('<span>Generating...</span>');
 
                     $.ajax({
                         url: '/finish',
@@ -144,19 +129,21 @@
                         success: function(data) {
                             if (data.status === 'success') {
                                 alert('Course created successfully!');
-                                window.location.href = '/course/' + encodeURIComponent(data.course_name);
+                                window.location.href = '/course/' + data.course_id;
                             } else {
                                 alert('Error creating course: ' + data.message);
                                 $('#finishButton').prop('disabled', false).html('<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Finish Course');
+                                $('#finishCourseInline').prop('disabled', false).html('<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Finish Course');
                             }
                         },
                         error: function() {
                             alert('Error creating course. Please try again.');
                             $('#finishButton').prop('disabled', false).html('<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Finish Course');
+                            $('#finishCourseInline').prop('disabled', false).html('<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Finish Course');
                         }
                     });
                 }
-            });
+            }
 
             function sendMessage() {
                 const messageText = $('#userInput').val().trim();
@@ -175,6 +162,14 @@
                     success: function(data) {
                         removeLoading();
                         appendBotMessage(data.response);
+
+                        // Show duration selector if conversation is ready
+                        if (data.show_duration_selector && !durationSelectorShown) {
+                            durationSelectorShown = true;
+                            setTimeout(function() {
+                                appendDurationSelector();
+                            }, 500);
+                        }
                     },
                     error: function() {
                         removeLoading();
@@ -267,6 +262,58 @@
             function scrollToBottom() {
                 const area = $('#messagesArea');
                 area.scrollTop(area[0].scrollHeight);
+            }
+
+            function appendDurationSelector() {
+                const html = `
+                    <div class="message-group bot-group">
+                        <div class="message-avatar">
+                            <img src="{{ url_for('static', filename='icon.png') }}" alt="OLEG">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble bot-message">
+                                Perfect! Now, how much time would you like to dedicate to this course?
+                            </div>
+                            <div class="duration-selector">
+                                <button class="duration-btn" data-weeks="4">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                    </svg>
+                                    <span class="duration-label">4 Weeks</span>
+                                    <span class="duration-desc">Quick Start</span>
+                                </button>
+                                <button class="duration-btn active" data-weeks="8">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                                    </svg>
+                                    <span class="duration-label">8 Weeks</span>
+                                    <span class="duration-desc">Balanced</span>
+                                </button>
+                                <button class="duration-btn" data-weeks="20">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                                    </svg>
+                                    <span class="duration-label">20 Weeks</span>
+                                    <span class="duration-desc">Comprehensive</span>
+                                </button>
+                            </div>
+                            <button class="btn-finish-inline" id="finishCourseInline">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Finish Course
+                            </button>
+                        </div>
+                    </div>
+                `;
+                $('#messagesArea').append(html);
+                scrollToBottom();
+
+                // Handle inline finish button click (using delegated event handler)
+                $(document).on('click', '#finishCourseInline', function() {
+                    finishCourse();
+                });
             }
 
             function escapeHtml(text) {

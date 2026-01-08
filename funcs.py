@@ -109,13 +109,14 @@ def parse_schedule_to_activities(schedule_text, course_id, start_date=None):
     Parse schedule.txt into individual activity records
     Returns: List of activity dicts
     """
+    from datetime import date
+
     activities = []
     current_week = None
     day_counter = 0
 
     # Use provided start date or default to next Monday
     if start_date is None:
-        from datetime import date, timedelta
         today = date.today()
         # Find next Monday
         days_until_monday = (7 - today.weekday()) % 7
@@ -128,33 +129,51 @@ def parse_schedule_to_activities(schedule_text, course_id, start_date=None):
         start_date = datetime.combine(start_date, datetime.min.time())
 
     lines = schedule_text.split('\n')
+    print(f"\n=== PARSING SCHEDULE ===")
+    print(f"Total lines to parse: {len(lines)}")
+    print(f"Start date: {start_date}")
+    print(f"First 3 lines:")
+    for i, l in enumerate(lines[:3]):
+        print(f"  Line {i}: '{l}'")
 
-    for line in lines:
+    for idx, line in enumerate(lines):
+        original_line = line
         line = line.strip()
 
         # Skip empty lines
         if not line:
             continue
 
-        # Week header: **Week 1 (September 1-7)** or Week 1 (September 1-7)
-        if 'Week' in line and '(' in line:
-            week_match = re.search(r'Week\s*(\d+)', line, re.IGNORECASE)
-            if week_match:
-                current_week = int(week_match.group(1))
-                continue
-
-        # Skip checkpoint sections
-        if 'checkpoint' in line.lower() or 'test' in line.lower():
+        # Week header: **Week 1** or Week 1 (with or without dates)
+        # Remove asterisks first for easier matching
+        clean_line = line.replace('*', '').strip()
+        week_match = re.search(r'Week\s*(\d+)', clean_line, re.IGNORECASE)
+        if week_match and 'Day' not in line:
+            current_week = int(week_match.group(1))
+            print(f"Line {idx}: Found Week {current_week}: {line}")
             continue
-        if line.lower().startswith('questions:') or line.lower().startswith('solutions:'):
+
+        # Skip checkpoint/test sections (not daily activities)
+        if re.match(r'^(checkpoint|test|questions?|solutions?|answers?)[:.\s]', line.lower()):
             continue
 
         # Day activity: "- Day 1: Introduction to Java (30 min)" or "Day 1: ..."
-        day_match = re.search(r'[-•]?\s*Day\s*(\d+):\s*(.+)', line, re.IGNORECASE)
-        if day_match and current_week:
-            day_counter += 1
+        # More flexible regex to catch various formats
+        day_match = re.search(r'[-•*]?\s*Day\s*(\d+)\s*[:\-]\s*(.+)', line, re.IGNORECASE)
+
+        if idx < 10 and 'day' in line.lower():  # Debug first 10 lines containing 'day'
+            print(f"Line {idx} TESTING: '{line}' -> day_match={day_match is not None}")
+
+        if day_match:
             day_num_in_line = int(day_match.group(1))
             activity_text = day_match.group(2).strip()
+
+            # If no week was found yet, infer it from day number
+            if current_week is None:
+                current_week = ((day_num_in_line - 1) // 7) + 1
+                print(f"Line {idx}: Inferred Week {current_week} from Day {day_num_in_line}")
+
+            day_counter += 1
 
             # Calculate scheduled date
             scheduled_date = start_date + timedelta(days=day_counter - 1)
@@ -172,17 +191,27 @@ def parse_schedule_to_activities(schedule_text, course_id, start_date=None):
             elif 'test' in activity_text.lower() or 'quiz' in activity_text.lower():
                 activity_type = 'checkpoint'
 
-            activities.append({
+            activity = {
                 'course_id': course_id,
                 'week_number': current_week,
                 'day_number': day_counter,
                 'day_of_week': day_of_week,
                 'scheduled_date': scheduled_date.date(),
-                'title': line.strip().lstrip('-•').strip(),
+                'title': line.strip().lstrip('-•*').strip(),
                 'description': None,
                 'duration_minutes': duration,
                 'activity_type': activity_type
-            })
+            }
+            activities.append(activity)
+
+            if day_counter <= 5:  # Log first 5 activities for debugging
+                print(f"Line {idx}: Parsed Day {day_counter} (Week {current_week}): {activity_text[:50]}... -> {scheduled_date.date()}")
+
+    print(f"\n=== PARSING COMPLETE ===")
+    print(f"Total activities parsed: {len(activities)}")
+    if activities:
+        print(f"Date range: {activities[0]['scheduled_date']} to {activities[-1]['scheduled_date']}")
+    print(f"========================\n")
 
     return activities
 
@@ -277,35 +306,53 @@ Return in this JSON format:
 
     else:
         # Generate theory content for study tasks in steps
-        prompt = f"""Based on this course material, create step-by-step study content for: {task_title}
+        prompt = f"""Based on this course material, create engaging step-by-step study content for: {task_title}
 
 Study Guide Context:
 {study_guide_summary}
 
-Break the content into 4-6 digestible steps. Each step should be concise (100-150 words).
+Create 3-5 varied learning steps. Each step should have a DIFFERENT purpose and format:
+
+Step types to use (vary them):
+1. Introduction/Overview - Brief context and why this matters (2-3 sentences)
+2. Core Concept - Explain the main idea with clear examples (1 paragraph)
+3. Visual/Analogy - Use a real-world analogy or example to illustrate the concept
+4. Deep Dive - Technical details or advanced aspect (for deeper understanding)
+5. Practice Question - A question to test understanding (with clear instructions)
+
+IMPORTANT:
+- Make each step DISTINCT and serve a different learning purpose
+- Avoid repeating the same information
+- Use different teaching approaches for each step
+- Keep each step focused and concise (80-120 words)
+- The last step should always be a practice question
+- Use EXACTLY these type values: "theory", "example", or "practice" (not "practice question" or other variations)
 
 Return in this JSON format:
 {{
     "steps": [
         {{
-            "title": "Step title (e.g., 'Introduction', 'Key Concept', 'Example')",
-            "content": "Detailed explanation for this step...",
+            "title": "Why This Matters",
+            "content": "Brief intro explaining relevance...",
             "type": "theory"
         }},
         {{
-            "title": "Step title",
-            "content": "Detailed explanation...",
+            "title": "Core Concept: [Main Idea]",
+            "content": "Main explanation with examples...",
+            "type": "theory"
+        }},
+        {{
+            "title": "Real-World Application",
+            "content": "Concrete example or analogy...",
             "type": "example"
         }},
         {{
-            "title": "Practice Question",
-            "content": "A simple practice question to test understanding",
+            "title": "Quick Check",
+            "content": "Think about this: [question that makes them apply the concept]",
             "type": "practice"
         }}
     ]
-}}
-
-The last step should be a practice question or key takeaway."""
+}}"""
 
         response = chat(
             model=model,
